@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+
 const app = express();
 
 app.use(cors({
@@ -15,5 +16,12 @@ app.use(express.static("public"));  // to serve static files from 'public' direc
 app.use(cookieParser()); // to parse cookies
 
 
+
+//Import Routes 
+
+import userRoutes from "./routes/user.routes.js";
+
+//Use Routes
+app.use("/api/v1/users",userRoutes);
  
 export { app } 
