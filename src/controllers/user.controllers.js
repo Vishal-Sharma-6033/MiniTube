@@ -1,15 +1,17 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/apiError.js";
-import User from "../models/user.model.js";
+import { ApiError } from "../utils/ApiErrors.js";
+// import User from "../models/user.models.js";
+import User from "../models/user.models.js";
+
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   // Registration logic here
 
-  const { username, email, password, fullName } = req.body;
+  const { username, email, password, fullname } = req.body;
 
-  if (!fullName) {
+  if (!fullname) {
     throw new ApiError(400, "Full name is required");
   }
   if (!username) {
@@ -42,7 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
    }
    
    const user= await User.create({
-    fullName,
+    fullname,
     avatar:avatar.url,
     coverImage:coverImage?.url || " ",
     email,
