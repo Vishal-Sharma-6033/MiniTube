@@ -39,6 +39,7 @@ The backend is designed using a **clean and modular architecture** following ind
 
 ## 📁 Project Structure
 
+```
 MiniTube
 │
 ├── public/
@@ -72,14 +73,35 @@ MiniTube
 ├── package.json
 └── README.md
 
+```
 ---
----
+
 
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the Repository
 
-```bash
 git clone https://github.com/Vishal-Sharma-6033/MiniTube.git
+
+---
+<h3>2️⃣ Install Dependencies</h3>
+npm install
+
+---
+<h3>3️⃣ Create .env File</h3>
+PORT=5000 <br>
+MONGODB_URI=your_mongodb_uri <br>
+ACCESS_TOKEN_SECRET=your_secret_key <br>
+REFRESH_TOKEN_SECRET=your_secret_key <br>
+
+---
+
+<h3>4️⃣ Run the Server</h3>
+npm run dev
+
+---
+## 👨‍💻 Author
+Vishal Sharma <br>
+MERN Stack Developer
 
 
