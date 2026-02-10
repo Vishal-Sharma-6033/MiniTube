@@ -75,19 +75,6 @@ const updateTweet=asyncHandler(async(req,res)=>{
 
 })
 
-
-// const getVideoById = asyncHandler(async (req, res) => {
-//   const { id } = req.params;
-//   if (!isValidObjectId(id)) {
-//     throw new ApiError(400, "Invalid video id");
-//   }
-//   const video = await Video.findById(id).populate("owner", "username avatar");
-//   if (!video) {
-//     throw new ApiError(404, "Video not found");
-//   }
-//   res.status(200).json(new ApiResponse(true, "Video details", video));
-// });
-
 const getUserTweet=asyncHandler(async(req,res)=>{
     const {id}=req.params
     if(!isValidObjectId(id)){
