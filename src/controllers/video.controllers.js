@@ -8,7 +8,7 @@ import { ApiError } from "../utils/ApiErrors.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
   const videos = await Video.find().populate("owner", "username avatar");
-  res.status(200).json(new ApiResponse(true, "All videos", videos));
+  res.status(200).json(new ApiResponse(200, videos, "All videos"));
 });
 
 const PublishVideo = asyncHandler(async (req, res) => {
@@ -25,11 +25,8 @@ const PublishVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Thumbnail is required");
   }
 
-  const videoUrl = await uploadOnCloudinary(videoFile.path, "videos");
-  const thumbnailUrl = await uploadOnCloudinary(
-    thumbnailFile.path,
-    "thumbnails"
-  );
+  const videoUrl = await uploadOnCloudinary(videoFile.path);
+  const thumbnailUrl = await uploadOnCloudinary(thumbnailFile.path);
 //Here we create a new document in the videos collection with the provided details 
   const video = new Video({
     title,
@@ -44,7 +41,7 @@ const PublishVideo = asyncHandler(async (req, res) => {
 
   res
     .status(201)
-    .json(new ApiResponse(true, "Video published successfully", video));
+    .json(new ApiResponse(201, video, "Video published successfully"));
 });
 
 const getVideoById = asyncHandler(async (req, res) => {
@@ -56,7 +53,7 @@ const getVideoById = asyncHandler(async (req, res) => {
   if (!video) {
     throw new ApiError(404, "Video not found");
   }
-  res.status(200).json(new ApiResponse(true, "Video details", video));
+  res.status(200).json(new ApiResponse(200, video, "Video details"));
 });
 
 const updateVideo = asyncHandler(async (req, res) => {
@@ -85,7 +82,7 @@ const updateVideo = asyncHandler(async (req, res) => {
   await video.save();
   res
     .status(200)
-    .json(new ApiResponse(true, "Video updated successfully", video));
+    .json(new ApiResponse(200, video, "Video updated successfully"));
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
@@ -102,7 +99,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
   }
   await video.deleteOne();
 
-  res.status(200).json(new ApiResponse(true, "Video deleted successfully"));
+  res.status(200).json(new ApiResponse(200, null, "Video deleted successfully"));
 });
 
 const toggleVideoStatus = asyncHandler(async (req, res) => {
@@ -117,15 +114,15 @@ const toggleVideoStatus = asyncHandler(async (req, res) => {
   if (video.owner.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not authorized to update this video");
   }
-  video.isPublic = !video.isPublic;
+  video.isPublished = !video.isPublished;
   await video.save();
   res
     .status(200)
     .json(
       new ApiResponse(
-        true,
-        `Video is now ${video.isPublic ? "public" : "private"}`,
-        video
+        200,
+        video,
+        `Video is now ${video.isPublished ? "public" : "private"}`
       )
     );
 });

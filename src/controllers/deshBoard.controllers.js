@@ -117,7 +117,7 @@ const getChannelVideos=asyncHandler(async(req,res)=>{
                 pipeline: [
                     {
                         $project: {
-                            fullName: 1,
+                            fullname: 1,
                             username: 1,
                             avatar: 1
                         }

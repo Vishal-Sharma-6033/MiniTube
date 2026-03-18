@@ -46,7 +46,7 @@ const getUserchannelSubscription = asyncHandler(async (req, res) => {
         channel: channelId
     }).populate({
         path: "subscriber",
-        select: "fullName username avatar"
+        select: "fullname username avatar"
     });
 
     return res.status(200).json(
@@ -70,7 +70,7 @@ const getSubscribedChannel = asyncHandler(async (req, res) => {
         subscriber: subscriberId
     }).populate({
         path: "channel",
-        select: "fullName username avatar"
+        select: "fullname username avatar"
     });
 
     return res.status(200).json(

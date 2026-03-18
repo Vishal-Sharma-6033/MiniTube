@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 
-const generateAccessTokenAndrefreshToken = async (userId) => {
+const generateAccessTokenAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
 
@@ -118,7 +118,7 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const { accessToken, refreshToken } =
-    await generateAccessTokenAndrefreshToken(user._id);
+    await generateAccessTokenAndRefreshToken(user._id);
 
   const loggedInUser = await User.findById(user._id).select(
     "-password -refreshToken"
@@ -178,13 +178,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET
     );
 
-    const user = User.findById(decodedToken?._id);
+    const user = await User.findById(decodedToken?.userId || decodedToken?._id);
 
     if (!user) {
       throw new ApiError(401, "Invalid refresh token");
     }
 
-    if (incomingRefreshToken !== user?.refreshAccessToken) {
+    if (incomingRefreshToken !== user?.refreshToken) {
       throw new ApiError(401, "Refresh token is Expired");
     }
 
@@ -193,17 +193,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    const { accessToken, newrefreshToken } =
-      await generateAccessTokenAndrefreshToken(user._id);
+    const { accessToken, refreshToken } =
+      await generateAccessTokenAndRefreshToken(user._id);
 
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newrefreshToken, options)
+      .cookie("refreshToken", refreshToken, options)
       .json(
         new ApiResponse(
           200,
-          { accessToken, refreshToken: newrefreshToken },
+          { accessToken, refreshToken },
           "Access token refreshed successfully"
         )
       );
@@ -212,7 +212,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-const changeCrrnetPassword = asyncHandler(async (req, res) => {
+const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const user = await User.findById(req.user?._id);
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
@@ -249,7 +249,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     req.user._id,
     {
       $set: {
-        fullName,
+        fullname: fullName,
         email,
       },
     },
@@ -350,11 +350,8 @@ const getUserProfileDetails = asyncHandler(async (req, res) => {
         subscribeCount: { $size: "$subscriberDetails" },
         subscribedToCount: { $size: "$subscribeTo" },
         isSubscribed: {
-          $in: [req.user?._id, "$subscriberDetails.subscriber"],
-        },
-        then: true,
-else: false,
-
+          $cond: [{ $in: [req.user?._id, "$subscriberDetails.subscriber"] }, true, false],
+        }
       },
     },
     {
@@ -391,14 +388,14 @@ const getWatchHistory=asyncHandler(async(req,res)=>{
     {
       $lookup:{
         from:"videos",
-        localField:"watchHiastory",
+        localField:"watchHistory",
         foreignField:"_id",
         as:"watchHistoryDetails",
         pipeline:[
           {
             $lookup:{
               from:"users",
-              localField:"owner ",
+              localField:"owner",
               foreignField:"_id",
               as:"ownerDetails",
               //SubpipeLine
@@ -441,7 +438,7 @@ export {
   loginUser,
   logoutUser,
   refreshAccessToken,
-  changeCrrnetPassword,
+  changeCurrentPassword,
   getCurrentUserDetails,
   updateAccountDetails,
   updateAvatar,

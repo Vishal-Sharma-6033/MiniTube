@@ -22,7 +22,7 @@ const incrementViews = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json(
-        new ApiResponse(true, "View counted", video.views)
+        new ApiResponse(200, { views: video.views }, "View counted")
     );
 });
 

@@ -21,7 +21,6 @@ const createPlaylist = asyncHandler(async (req, res) => {
     owner: req.user._id,
   });
 
-  await playlist.save();
   res.status(200).json(new ApiResponse(true, "Playlist Created Successfully"));
 });
 
@@ -80,7 +79,7 @@ const getUserPlaylist = asyncHandler(async (req, res) => {
 
   const playlist = await Playlist.find({
     owner: id,
-  }).populate("owner", "username fullName avatar");
+  }).populate("owner", "username fullname avatar");
 
   res
     .status(200)

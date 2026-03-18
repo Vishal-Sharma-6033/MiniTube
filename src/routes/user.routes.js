@@ -1,6 +1,6 @@
 import Router from "express";
 import {
-  changeCrrnetPassword,
+  changeCurrentPassword,
   getCurrentUserDetails,
   getUserProfileDetails,
   getWatchHistory,
@@ -31,7 +31,7 @@ router.route("/login").post(loginUser);
 //Secured Routes
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
-router.route("/change-password").post(verifyJWT, changeCrrnetPassword);
+router.route("/change-password").post(verifyJWT, changeCurrentPassword);
 router.route("/current-user").get(verifyJWT, getCurrentUserDetails);
 router.route("/update-account").patch(verifyJWT, updateAccountDetails);
 router

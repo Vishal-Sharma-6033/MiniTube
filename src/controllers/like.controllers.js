@@ -20,7 +20,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(true, "Video unliked successfully"));
+      .json(new ApiResponse(200, null, "Video unliked successfully"));
   }
 
   // LIKE
@@ -29,7 +29,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     likedBy: req.user._id,
   });
 
-  res.status(200).json(new ApiResponse(true, "Video liked successfully"));
+  res.status(200).json(new ApiResponse(200, null, "Video liked successfully"));
 });
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
@@ -48,16 +48,16 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(true, "comment unliked successfully"));
+      .json(new ApiResponse(200, null, "Comment unliked successfully"));
   }
 
   // LIKE
   await Like.create({
-    video: commentId,
+    comment: commentId,
     likedBy: req.user._id,
   });
 
-  res.status(200).json(new ApiResponse(true, "comment liked successfully"));
+  res.status(200).json(new ApiResponse(200, null, "Comment liked successfully"));
 });
 
 const toggleTweetLike = asyncHandler(async (req, res) => {
@@ -76,19 +76,19 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(true, "tweet unliked successfully"));
+      .json(new ApiResponse(200, null, "Tweet unliked successfully"));
   }
 
   // LIKE
   await Like.create({
-    video: tweetId,
+    tweet: tweetId,
     likedBy: req.user._id,
   });
 
-  res.status(200).json(new ApiResponse(true, "Tweet liked successfully"));
+  res.status(200).json(new ApiResponse(200, null, "Tweet liked successfully"));
 });
 
-const togglegetLikeVideos = asyncHandler(async (req, res) => {
+const getLikeVideos = asyncHandler(async (req, res) => {
   const likedVideos = await Like.find({
     likedBy: req.user._id,
     video: { $exists: true },
@@ -99,7 +99,7 @@ const togglegetLikeVideos = asyncHandler(async (req, res) => {
   res
     .status(200)
     .json(
-      new ApiResponse(true, "Liked videos fetched successfully", likedVideos)
+      new ApiResponse(200, likedVideos, "Liked videos fetched successfully")
     );
 });
 
@@ -107,5 +107,5 @@ export {
   toggleCommentLike,
   toggleVideoLike,
   toggleTweetLike,
-  togglegetLikeVideos,
+  getLikeVideos,
 };
