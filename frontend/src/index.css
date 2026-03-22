@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+:root {
+  --bg-primary: #080d1a;
+  --bg-secondary: #101a2c;
+  --panel: rgba(14, 23, 42, 0.55);
+  --panel-strong: rgba(16, 28, 50, 0.82);
+  --stroke: rgba(111, 176, 255, 0.22);
+  --text-primary: #e8f1ff;
+  --text-muted: #8ea4c7;
+  --brand: #3ec9a7;
+  --brand-strong: #21b69a;
+  --warn: #ffb457;
+  --danger: #ff6b6b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-primary);
+  background:
+    radial-gradient(1200px 700px at 0% -20%, rgba(62, 201, 167, 0.2), transparent),
+    radial-gradient(900px 600px at 100% 0%, rgba(62, 111, 201, 0.24), transparent),
+    linear-gradient(180deg, var(--bg-secondary), var(--bg-primary));
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell-grid {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  min-height: 100vh;
+}
+
+.glass-panel {
+  background: var(--panel);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 20px 40px rgba(3, 9, 22, 0.36);
+}
+
+.soft-neu {
+  box-shadow: 7px 7px 20px rgba(3, 9, 22, 0.65), -6px -6px 18px rgba(43, 60, 90, 0.22);
+}
+
+.section-title {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.rise-in {
+  animation: riseIn 0.55s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .app-shell-grid {
+    grid-template-columns: 1fr;
+  }
+}

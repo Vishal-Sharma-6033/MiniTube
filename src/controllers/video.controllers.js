@@ -1,7 +1,7 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Video } from "../models/video.models.js";
 // import {User} from "../models/user.model.js"
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadToTelegram } from "../utils/telegramStorage.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiErrors.js";
@@ -25,8 +25,8 @@ const PublishVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Thumbnail is required");
   }
 
-  const videoUrl = await uploadOnCloudinary(videoFile.path);
-  const thumbnailUrl = await uploadOnCloudinary(thumbnailFile.path);
+  const videoUrl = await uploadToTelegram(videoFile.path);
+  const thumbnailUrl = await uploadToTelegram(thumbnailFile.path);
 //Here we create a new document in the videos collection with the provided details 
   const video = new Video({
     title,

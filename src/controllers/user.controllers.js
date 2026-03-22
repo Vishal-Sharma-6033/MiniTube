@@ -3,8 +3,14 @@ import { ApiError } from "../utils/ApiErrors.js";
 import User from "../models/user.models.js";
 import mongoose from "mongoose";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadToTelegram } from "../utils/telegramStorage.js";
 import jwt from "jsonwebtoken";
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+};
 
 const generateAccessTokenAndRefreshToken = async (userId) => {
   try {
@@ -68,8 +74,17 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar image is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  let avatar;
+  let coverImage;
+  try {
+    avatar = await uploadToTelegram(avatarLocalPath);
+    coverImage = await uploadToTelegram(coverImageLocalPath);
+  } catch (error) {
+    throw new ApiError(
+      500,
+      "Image upload failed. Check Telegram bot config/network and retry."
+    );
+  }
 
   if (!avatar) {
     throw new ApiError(500, "Failed to upload avatar image");
@@ -78,7 +93,9 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     fullname,
     avatar: avatar.url,
-    coverImage: coverImage?.url || " ",
+    avatarFileId: avatar.file_id || "",
+    coverImage: coverImage?.url || "",
+    coverImageFileId: coverImage?.file_id || "",
     email,
     username: username.toLowerCase(),
     password,
@@ -124,15 +141,10 @@ const loginUser = asyncHandler(async (req, res) => {
     "-password -refreshToken"
   );
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .cookie("refreshToken", refreshToken, cookieOptions)
     .json(
       new ApiResponse(
         200,
@@ -154,14 +166,10 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
   );
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
   return res
     .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
     .json(new ApiResponse(200, null, "User logged out successfully"));
 });
 
@@ -188,18 +196,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       throw new ApiError(401, "Refresh token is Expired");
     }
 
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
-
     const { accessToken, refreshToken } =
       await generateAccessTokenAndRefreshToken(user._id);
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", refreshToken, cookieOptions)
       .json(
         new ApiResponse(
           200,
@@ -268,7 +271,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar image is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadToTelegram(avatarLocalPath);
 
   if (!avatar) {
     throw new ApiError(500, "Failed to upload avatar image");
@@ -279,6 +282,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
     {
       $set: {
         avatar: avatar.url,
+        avatarFileId: avatar.file_id || "",
       },
     },
     { new: true }
@@ -296,7 +300,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Cover image is required");
   }
 
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  const coverImage = await uploadToTelegram(coverImageLocalPath);
 
   if (!coverImage) {
     throw new ApiError(500, "Failed to upload cover image");
@@ -307,6 +311,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     {
       $set: {
         coverImage: coverImage.url,
+        coverImageFileId: coverImage.file_id || "",
       },
     },
     { new: true }

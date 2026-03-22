@@ -27,12 +27,22 @@ const userSchema = new Schema(
     },
 
     avatar: {
-      type: String, //cloudinary url
+      type: String, // media file URL
       required: true,
+    },
+    avatarFileId: {
+      type: String,
+      default: "",
+      trim: true,
     },
 
     coverImage: {
-      type: String, //cloudinary url
+      type: String, // media file URL
+    },
+    coverImageFileId: {
+      type: String,
+      default: "",
+      trim: true,
     },
 
     watchHistory: [
